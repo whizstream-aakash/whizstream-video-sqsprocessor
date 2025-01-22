@@ -36,11 +36,11 @@ async function init() {
             console.log('No messages in the queue');
             continue;
         }
+        console.log(`Message Received: ${Messages}`);
 
         try {
             for (const message of Messages) {
                 const { MessageId, Body, ReceiptHandle } = message;
-                console.log(`Message Received: ${MessageId}, ${Body}, ${ReceiptHandle}`);
 
                 // Validate and Parse the event
                 if (!Body) continue;

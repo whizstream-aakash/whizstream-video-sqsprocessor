@@ -30,13 +30,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build TypeScript files
-        run: npm run build
-
+          
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 

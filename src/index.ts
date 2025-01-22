@@ -31,6 +31,7 @@ async function init() {
 
     while (true) {
         const { Messages } = await client.send(command);
+        console.log(`Access: ${process.env.AWS_ACCESS_KEY_ID}, Secret: ${process.env.AWS_SECRET_ACCESS_KEY}`);
 
         if (!Messages) {
             console.log('No messages in the queue');
@@ -41,7 +42,6 @@ async function init() {
         try {
             for (const message of Messages) {
                 const { MessageId, Body, ReceiptHandle } = message;
-
                 // Validate and Parse the event
                 if (!Body) continue;
 

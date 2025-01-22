@@ -24,7 +24,7 @@ const ecsClient = new ECSClient({
 
 async function init() {
     console.log(`AccessKey: ${process.env.AWS_ACCESS_KEY_ID}, Secret: ${process.env.AWS_SECRET_ACCESS_KEY}`);
-
+    console.log(`SQS Queue: ${process.env.AWS_SQS_URL}`);
 
     const command = new ReceiveMessageCommand({
         QueueUrl: process.env.AWS_SQS_URL || '',

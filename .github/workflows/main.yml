@@ -19,6 +19,10 @@ jobs:
           echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> $GITHUB_ENV
           echo "AWS_SQS_URL=${{ secrets.AWS_SQS_URL }}" >> $GITHUB_ENV
 
+      - name: Debug AWS_REGION
+        run: |
+          echo "AWS Region is: $AWS_REGION"
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:

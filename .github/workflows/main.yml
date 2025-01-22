@@ -21,7 +21,8 @@ jobs:
 
       - name: Debug AWS_REGION
         run: |
-          echo "AWS Region is: $AWS_REGION"
+          echo "AWS_REGION=${AWS_REGION}"
+          echo "AWS_REGION from secrets=${{ secrets.AWS_REGION }}"
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1

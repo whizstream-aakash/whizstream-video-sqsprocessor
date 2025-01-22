@@ -68,7 +68,7 @@ async function init() {
 
                     // Spin the docker container
                     const runTaskCommand = new RunTaskCommand({
-                        taskDefinition: "arn:aws:ecs:us-east-1:730335317667:task-definition/videos-transcoder-task:1",
+                        taskDefinition: "arn:aws:ecs:us-east-1:730335317667:task-definition/videos-transcoder-task:2",
                         cluster: "arn:aws:ecs:us-east-1:730335317667:cluster/whizstream-videos-transcode-cluster",
                         launchType:"FARGATE",
                         networkConfiguration:{

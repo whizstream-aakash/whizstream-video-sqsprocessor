@@ -12,16 +12,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Set AWS Region
+        run: echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> $GITHUB_ENV
+
       - name: Set up environment variables
         run: |
           echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
           echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> $GITHUB_ENV
           echo "AWS_SQS_URL=${{ secrets.AWS_SQS_URL }}" >> $GITHUB_ENV
-
-      - name: Debug AWS_REGION Formatting
-        run: |
-          echo "AWS_REGION='$AWS_REGION'"
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1

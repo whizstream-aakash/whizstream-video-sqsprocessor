@@ -22,7 +22,6 @@ jobs:
       - name: Debug AWS_REGION
         run: |
           echo "AWS Region is: $AWS_REGION"
-          echo "AWS Region is: $AWS_SQS_URL"
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1

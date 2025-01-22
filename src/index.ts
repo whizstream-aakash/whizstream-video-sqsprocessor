@@ -4,7 +4,7 @@ import {ECSClient, RunTaskCommand} from '@aws-sdk/client-ecs'
 import dotenv from 'dotenv';
 dotenv.config();
 
-
+//setup SQS client
 const client = new SQSClient({
     region: process.env.AWS_REGION || '',
     credentials: {

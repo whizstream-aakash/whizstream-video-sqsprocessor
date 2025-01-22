@@ -1,13 +1,18 @@
+# Use Node.js as the base image
 FROM node:18.0.0-alpine3.15
 
+# Set working directory
 WORKDIR /app
 
-COPY package.json package-lock.json* ./
-
+# Copy package files and install dependencies
+COPY package.json package-lock.json ./
 RUN npm ci
 
+# Copy source files
 COPY . .
 
-EXPOSE 3000
+# Compile TypeScript files
+RUN npm run build
 
-CMD ["npm", "start"]
+# Start the application
+CMD ["node", "dist/index.js"]

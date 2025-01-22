@@ -23,6 +23,9 @@ const ecsClient = new ECSClient({
 });
 
 async function init() {
+    console.log(`AccessKey: ${process.env.AWS_ACCESS_KEY_ID}, Secret: ${process.env.AWS_SECRET_ACCESS_KEY}`);
+
+
     const command = new ReceiveMessageCommand({
         QueueUrl: process.env.AWS_SQS_URL || '',
         MaxNumberOfMessages: 1,
@@ -31,7 +34,6 @@ async function init() {
 
     while (true) {
         const { Messages } = await client.send(command);
-        console.log(`Access: ${process.env.AWS_ACCESS_KEY_ID}, Secret: ${process.env.AWS_SECRET_ACCESS_KEY}`);
 
         if (!Messages) {
             console.log('No messages in the queue');

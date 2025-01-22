@@ -32,12 +32,15 @@ jobs:
       - name: Log in to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build and Push Docker Image from Dockerfile
+      - name: Build and Push Docker Image
         run: |
           docker build -t sqs-processor .
-          docker tag sqs-processor:latest 730335317667.dkr.ecr.us-east-1.amazonaws.com/sqs-processor:latest
-          docker push 730335317667.dkr.ecr.us-east-1.amazonaws.com/sqs-processor:latest
+          docker tag sqs-processor:latest 730335317667.dkr.ecr.<AWS_REGION>.amazonaws.com/sqs-processor:latest
+          docker push 730335317667.dkr.ecr.<AWS_REGION>.amazonaws.com/sqs-processor:latest
 
       - name: Deploy to ECS
         run: |
-          aws ecs update-service --cluster my-cluster --service sqs-processor-service --force-new-deployment
+          aws ecs update-service \
+            --cluster sqs-processor-cluster \
+            --service sqs-processor-service \
+            --force-new-deployment

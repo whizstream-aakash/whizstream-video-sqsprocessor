@@ -10,7 +10,7 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_REGION: us-east-1
   EC2_HOST: ${{ secrets.EC2_HOST }}
-  PRIVATE_SSH_KEY: ${{ secrets.AWS_SSH_KEY }}
+  PRIVATE_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
 
 jobs:
   deploy:

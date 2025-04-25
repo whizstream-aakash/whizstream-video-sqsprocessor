@@ -40,7 +40,6 @@ async function init() {
             continue;
         }
         console.log(`Message Received: ${Messages}`);
-
         try {
             for (const message of Messages) {
                 const { MessageId, Body, ReceiptHandle } = message;

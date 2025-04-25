@@ -34,5 +34,30 @@ jobs:
       - name: Build and Push Docker Image
         run: |
           docker build -t sqs-processor .
-          docker tag sqs-processor:latest 793130699528.dkr.ecr.us-east-1.amazonaws.com/whizstream:latest
-          docker push 793130699528.dkr.ecr.us-east-1.amazonaws.com/whizstream:latest
+          docker tag sqs-processor:latest 793130699528.dkr.ecr.us-east-1.amazonaws.com/sqs-processor:latest
+          docker push 793130699528.dkr.ecr.us-east-1.amazonaws.com/sqs-processor:latest
+          
+      - name: SSH into EC2 and deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          envs: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION
+          script: |
+            echo "Logging into ECR on EC2 instance"
+            aws ecr get-login-password --region $AWS_REGION | sudo docker login --username AWS --password-stdin 793130699528.dkr.ecr.us-east-1.amazonaws.com
+
+            echo "Pulling the latest image from ECR"
+            sudo docker pull 793130699528.dkr.ecr.us-east-1.amazonaws.com/sqs-processor:latest
+
+            echo "Stopping existing container if any"
+            sudo docker stop $(sudo docker ps -q --filter ancestor=sqs-processor) || true
+            sudo docker rm $(sudo docker ps -aq --filter ancestor=sqs-processor) || true
+
+            echo "Running the new container"
+            sudo docker run -d --restart unless-stopped \
+              -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
+              -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
+              -e AWS_REGION=$AWS_REGION \
+              sqs-processor      

@@ -1,8 +1,9 @@
-name: Deploy to EC2
+name: Deploy SQS Processor
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   deploy:
@@ -19,36 +20,19 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: SSH into EC2 and deploy
-        uses: appleboy/ssh-action@master
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
-          envs: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, AWS_SQS_URL
-          script: |
-            # Debugging environment variables
-            echo "AWS_ACCESS_KEY_ID is set: $AWS_ACCESS_KEY_ID"
-            echo "AWS_REGION is: ${{ secrets.EC2_HOST }}"
-            echo "AWS_SQS_URL is: ${{ secrets.EC2_SQS_URL }}"
+          node-version: 18
 
-            # Navigate to the project directory
-            cd sqs-polling || exit 1  # Exit if directory is not found
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-            # Pull the latest code from the main branch
-            git pull origin main || exit 1  # Exit if git pull fails
+      - name: Log in to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
 
-            # Build Docker image
-            sudo docker build -t sqs-poller . || exit 1  # Exit if build fails
-
-            # Stop and remove previous containers
-            sudo docker stop $(sudo docker ps -q --filter ancestor=sqs-poller) || true
-            sudo docker rm $(sudo docker ps -aq --filter ancestor=sqs-poller) || true
-
-            # Run Docker container
-            sudo docker run -d --restart unless-stopped \
-              -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
-              -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
-              -e AWS_REGION=$AWS_REGION \
-              -e AWS_SQS_URL=$AWS_SQS_URL \
-              sqs-poller || exit 1  # Exit if docker run fails
+      - name: Build and Push Docker Image
+        run: |
+          docker build -t sqs-processor .
+          docker tag sqs-processor:latest 730335317667.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/sqs-processor:latest
+          docker push 730335317667.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/sqs-processor:latest

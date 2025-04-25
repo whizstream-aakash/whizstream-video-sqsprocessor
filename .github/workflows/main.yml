@@ -28,9 +28,9 @@ jobs:
           envs: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, AWS_SQS_URL
           script: |
             # Debugging environment variables
-            echo "AWS_ACCESS_KEY_ID is set: ${AWS_ACCESS_KEY_ID:+set}"
-            echo "AWS_REGION is: $AWS_REGION"
-            echo "AWS_SQS_URL is: $AWS_SQS_URL"
+            echo "AWS_ACCESS_KEY_ID is set: $AWS_ACCESS_KEY_ID"
+            echo "AWS_REGION is: ${{ secrets.EC2_HOST }}"
+            echo "AWS_SQS_URL is: ${{ secrets.EC2_SQS_URL }}"
 
             # Navigate to the project directory
             cd sqs-polling || exit 1  # Exit if directory is not found

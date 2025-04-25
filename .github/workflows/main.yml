@@ -48,7 +48,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
-          envs: AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,AWS_REGION
+          envs: AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,AWS_REGION,AWS_SQS_URL,AWS
           script: |
             REGISTRY="${{ steps.login-ecr.outputs.registry }}"
             REPOSITORY="sqs-processor"
@@ -68,4 +68,9 @@ jobs:
 
             sudo docker pull $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
-            sudo docker run -d --name myappcontainer -p 80:8080 $REGISTRY/$REPOSITORY:$IMAGE_TAG
+            sudo docker run -d --name myappcontainer \
+              -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
+              -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
+              -e AWS_REGION=$AWS_REGION \
+              -e AWS_SQS_URL=$AWS_SQS_URL \
+              -p 80:8080 $REGISTRY/$REPOSITORY:$IMAGE_TAG

@@ -35,4 +35,4 @@ jobs:
         run: |
           docker build -t sqs-processor .
           docker tag sqs-processor:latest 793130699528.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/whizstream:latest
-          docker push 793130699528.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/sqs-whizstream:latest
+          docker push 793130699528.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/whizstream:latest

@@ -30,10 +30,14 @@ async function init() {
   console.log(
     `AccessKey: ${process.env.AWS_ACCESS_KEY_ID}, Secret: ${process.env.AWS_SECRET_ACCESS_KEY}`
   );
-  console.log(`SQS Queue: ${process.env.AWS_SQS_URL}`);
+  console.log(
+    `SQS Queue: https://sqs.us-east-1.amazonaws.com/793130699528/whizstream-upload-video-queue`
+  );
 
   const command = new ReceiveMessageCommand({
-    QueueUrl: process.env.AWS_SQS_URL || "",
+    QueueUrl:
+      process.env.AWS_SQS_URL ||
+      "https://sqs.us-east-1.amazonaws.com/793130699528/whizstream-upload-video-queue",
     MaxNumberOfMessages: 1,
     WaitTimeSeconds: 5,
   });
@@ -58,7 +62,9 @@ async function init() {
           if (event.Event == "s3.TestEvent") {
             await client.send(
               new DeleteMessageCommand({
-                QueueUrl: process.env.AWS_SQS_URL || "",
+                QueueUrl:
+                  process.env.AWS_SQS_URL ||
+                  "https://sqs.us-east-1.amazonaws.com/793130699528/whizstream-upload-video-queue",
                 ReceiptHandle: ReceiptHandle,
               })
             );
@@ -112,7 +118,9 @@ async function init() {
           // Delete the message from the queue
           await client.send(
             new DeleteMessageCommand({
-              QueueUrl: process.env.AWS_SQS_URL || "",
+              QueueUrl:
+                process.env.AWS_SQS_URL ||
+                "https://sqs.us-east-1.amazonaws.com/793130699528/whizstream-upload-video-queue",
               ReceiptHandle: ReceiptHandle,
             })
           );

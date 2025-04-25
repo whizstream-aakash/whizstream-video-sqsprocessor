@@ -62,8 +62,10 @@ jobs:
           envs: PRIVATE_SSH_KEY,REGISTRY,REPOSITORY,IMAGE_TAG,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,AWS_DEFAULT_REGION,AWS_REGION
           script: |
             sudo apt update
-            sudo apt install docker.io -y
-            sudo apt install awscli -y
+            sudo apt install -y docker.io curl unzip
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
             sudo $(aws ecr get-login --no-include-email --region us-east-1);
             sudo docker stop myappcontainer || true
             sudo docker rm myappcontainer || true

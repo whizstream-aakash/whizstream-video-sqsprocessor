@@ -36,7 +36,7 @@ jobs:
           docker build -t sqs-processor .
           docker tag sqs-processor:latest 793130699528.dkr.ecr.us-east-1.amazonaws.com/sqs-processor:latest
           docker push 793130699528.dkr.ecr.us-east-1.amazonaws.com/sqs-processor:latest
-          
+
       - name: SSH into EC2 and deploy
         uses: appleboy/ssh-action@master
         with:
@@ -45,6 +45,13 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           envs: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION
           script: |
+            # Install AWS CLI if not already installed
+            if ! command -v aws &> /dev/null; then
+              echo "AWS CLI not found. Installing..."
+              curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+              unzip awscliv2.zip
+              sudo ./aws/install
+            fi
             echo "Logging into ECR on EC2 instance"
             aws ecr get-login-password --region $AWS_REGION | sudo docker login --username AWS --password-stdin 793130699528.dkr.ecr.us-east-1.amazonaws.com
 
@@ -60,4 +67,4 @@ jobs:
               -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
               -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
               -e AWS_REGION=$AWS_REGION \
-              sqs-processor      
+              sqs-processor

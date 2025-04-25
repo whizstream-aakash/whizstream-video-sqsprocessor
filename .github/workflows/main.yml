@@ -19,6 +19,8 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           envs: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, AWS_SQS_URL
           script: |
+            echo "AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:+set}"
+            echo "AWS_REGION: $AWS_REGION"
             cd sqs-polling
             git pull origin main
             sudo docker build -t sqs-poller .

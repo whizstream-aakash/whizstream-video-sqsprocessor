@@ -34,5 +34,5 @@ jobs:
       - name: Build and Push Docker Image
         run: |
           docker build -t sqs-processor .
-          docker tag sqs-processor:latest 793130699528.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/whizstream:latest
-          docker push 793130699528.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/whizstream:latest
+          docker tag sqs-processor:latest 793130699528.dkr.ecr.us-east-1.amazonaws.com/whizstream:latest
+          docker push 793130699528.dkr.ecr.us-east-1.amazonaws.com/whizstream:latest

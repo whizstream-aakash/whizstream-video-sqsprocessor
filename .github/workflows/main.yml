@@ -5,27 +5,21 @@ on:
     branches:
       - main
 
-env:
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  AWS_REGION: us-east-1
-  EC2_HOST: ${{ secrets.EC2_HOST }}
-  PRIVATE_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      AWS_REGION: us-east-1
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Configure AWS Credentials
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -50,35 +44,28 @@ jobs:
 
       - name: SSH into EC2 and deploy
         uses: appleboy/ssh-action@master
-        env:
-          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          REPOSITORY: sqs-processor
-          IMAGE_TAG: ${{ github.sha }}
-          AWS_DEFAULT_REGION: us-east-1
         with:
-          host: ${{ env.EC2_HOST }}
+          host: ${{ secrets.EC2_HOST }}
           username: ubuntu
-          key: ${{ env.PRIVATE_SSH_KEY }}
-          envs: PRIVATE_SSH_KEY,REGISTRY,REPOSITORY,IMAGE_TAG,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,AWS_DEFAULT_REGION,AWS_REGION
+          key: ${{ secrets.EC2_SSH_KEY }}
+          envs: AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,AWS_REGION
           script: |
-            # Update and install necessary dependencies
+            REGISTRY="${{ steps.login-ecr.outputs.registry }}"
+            REPOSITORY="sqs-processor"
+            IMAGE_TAG="${{ github.sha }}"
+
             sudo apt update
             sudo apt install -y docker.io curl unzip
 
-            # Install or update AWS CLI v2
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
+            unzip -o awscliv2.zip
             sudo ./aws/install --update
 
-            # Authenticate Docker to Amazon ECR
-            aws ecr get-login-password --region $AWS_DEFAULT_REGION | sudo docker login --username AWS --password-stdin $REGISTRY
+            aws ecr get-login-password --region $AWS_REGION | sudo docker login --username AWS --password-stdin $REGISTRY
 
-            # Stop and remove any existing containers
             sudo docker stop myappcontainer || true
             sudo docker rm myappcontainer || true
 
-            # Pull the latest Docker image from ECR
             sudo docker pull $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
-            # Run the Docker container
             sudo docker run -d --name myappcontainer -p 80:8080 $REGISTRY/$REPOSITORY:$IMAGE_TAG

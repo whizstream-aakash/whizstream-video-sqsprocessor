@@ -17,7 +17,6 @@ const client = new SQSClient({
   },
 });
 
-
 //setup ECS client
 const ecsClient = new ECSClient({
   region: process.env.AWS_REGION || "us-east-1",

@@ -17,6 +17,7 @@ const client = new SQSClient({
   },
 });
 
+
 //setup ECS client
 const ecsClient = new ECSClient({
   region: process.env.AWS_REGION || "us-east-1",
@@ -84,36 +85,36 @@ async function init() {
           );
 
           // Spin the docker container
-          const runTaskCommand = new RunTaskCommand({
-            taskDefinition:
-              "arn:aws:ecs:us-east-1:730335317667:task-definition/videos-transcoder-task:2",
-            cluster:
-              "arn:aws:ecs:us-east-1:730335317667:cluster/whizstream-videos-transcode-cluster",
-            launchType: "FARGATE",
-            networkConfiguration: {
-              awsvpcConfiguration: {
-                securityGroups: ["sg-0176c5f4a42e5118d"],
-                subnets: [
-                  "subnet-0c19f2f14c2c0fb65",
-                  "subnet-0f437922a3badeace",
-                  "subnet-09e806e3aa26500c1",
-                ],
-                assignPublicIp: "ENABLED",
-              },
-            },
-            overrides: {
-              containerOverrides: [
-                {
-                  name: "video-transcoder",
-                  environment: [
-                    { name: "VIDEO_BUCKET", value: bucket.name },
-                    { name: "VIDEO_KEY", value: s3.object.key },
-                  ],
-                },
-              ],
-            },
-          });
-          await ecsClient.send(runTaskCommand);
+          // const runTaskCommand = new RunTaskCommand({
+          //   taskDefinition:
+          //     "arn:aws:ecs:us-east-1:730335317667:task-definition/videos-transcoder-task:2",
+          //   cluster:
+          //     "arn:aws:ecs:us-east-1:730335317667:cluster/whizstream-videos-transcode-cluster",
+          //   launchType: "FARGATE",
+          //   networkConfiguration: {
+          //     awsvpcConfiguration: {
+          //       securityGroups: ["sg-0176c5f4a42e5118d"],
+          //       subnets: [
+          //         "subnet-0c19f2f14c2c0fb65",
+          //         "subnet-0f437922a3badeace",
+          //         "subnet-09e806e3aa26500c1",
+          //       ],
+          //       assignPublicIp: "ENABLED",
+          //     },
+          //   },
+          //   overrides: {
+          //     containerOverrides: [
+          //       {
+          //         name: "video-transcoder",
+          //         environment: [
+          //           { name: "VIDEO_BUCKET", value: bucket.name },
+          //           { name: "VIDEO_KEY", value: s3.object.key },
+          //         ],
+          //       },
+          //     ],
+          //   },
+          // });
+          // await ecsClient.send(runTaskCommand);
 
           // Delete the message from the queue
           await client.send(
